@@ -1,15 +1,67 @@
+import asyncio
 
-def start_strongman(name, power):
+
+async def start_strongman(name: str, power: int):
     """
     :param name: имя силача
     :param power: его подъёмная мощность
     """
     # В начале работы должна выводиться строка - 'Силач <имя силача> начал соревнования.'
-    # После должна выводиться строка - 'Силач <имя силача> поднял <номер шара>' с задержкой обратно пропорциональной его силе power. Для каждого участника количество шаров одинаковое - 5.
+    print(f'Силач {name} начал соревнования')
+
+    # Для каждого участника количество шаров одинаковое - 5.
+    for ball in range(5):
+        # После должна выводиться строка - 'Силач <имя силача> поднял <номер шара>'
+        # с задержкой обратно пропорциональной его силе power.
+        await asyncio.sleep(1/power)
+        print(f'Силач {name} поднял шар {ball+1}')
+
+    # В конце поднятия всех шаров должна выводится строка 'Силач <имя силача> закончил соревнования.'
+    print(f'Силач {name} закончил соревнования')
+
+
+async def start_tournament(strongmen: dict[str, int]):
+    # напишите асинхронную функцию start_tournament,
+    # в которой создаются 3 задачи для функций start_strongman.
+    tasks = [asyncio.create_task(start_strongman(name, power)) for name, power in strongmen.items()]
+    # После поставьте каждую задачу в ожидание (await).
+    for task in tasks:
+        await task
 
 
 def main():
-    pass
+    # Имена(name) и силу(power) для вызовов функции start_strongman можете выбрать самостоятельно.
+    strongmen = {
+        'Pasha': 3,
+        'Denis': 4,
+        'Apollon': 5,
+    }
+    # Запустите асинхронную функцию start_tournament методом run.
+    asyncio.run(start_tournament(strongmen))
+    """
+    Вывод на консоль:
+    Силач Pasha начал соревнования
+    Силач Denis начал соревнования
+    Силач Apollon начал соревнования
+    Силач Apollon поднял 1 шар
+    Силач Denis поднял 1 шар
+    Силач Pasha поднял 1 шар
+    Силач Apollon поднял 2 шар
+    Силач Denis поднял 2 шар
+    Силач Apollon поднял 3 шар
+    Силач Pasha поднял 2 шар
+    Силач Denis поднял 3 шар
+    Силач Apollon поднял 4 шар
+    Силач Pasha поднял 3 шар
+    Силач Apollon поднял 5 шар
+    Силач Apollon закончил соревнования
+    Силач Denis поднял 4 шар
+    Силач Denis поднял 5 шар
+    Силач Denis закончил соревнования
+    Силач Pasha поднял 4 шар
+    Силач Pasha поднял 5 шар
+    Силач Pasha закончил соревнования
+    """
 
 
 if __name__ == '__main__':
